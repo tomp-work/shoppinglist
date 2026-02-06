@@ -12,5 +12,10 @@
 
 ## TODO
 
+- [ ] Story 1: get shopping list items: FE
+
+## DONE
+
 - [x] Dev env and tech stack setup
+- [x] Story 1: get shopping list items: BE
 
