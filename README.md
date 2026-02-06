@@ -12,7 +12,6 @@
 
 ## TODO
 
-- [ ] Story2: add shopping list item: FE
 - [ ] Improve FE status/error handling
 - [ ] Consider using UUIDs.
 
@@ -22,4 +21,5 @@
 - [x] Story1: get shopping list items: BE
 - [x] Story1: get shopping list items: FE
 - [x] Story2: add shopping list item: BE
+- [x] Story2: add shopping list item: FE
 
