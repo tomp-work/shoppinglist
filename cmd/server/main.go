@@ -9,6 +9,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Use(middleware.RequestLogger())
+	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
 
 	handler := handler.Handler{
 		Items: map[string]*handler.Item{
