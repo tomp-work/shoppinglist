@@ -12,11 +12,14 @@
 
 ## TODO
 
+- [ ] Story2: add shopping list item: FE
 - [ ] Improve FE status/error handling
+- [ ] Consider using UUIDs.
 
 ## DONE
 
 - [x] Dev env and tech stack setup
-- [x] Story 1: get shopping list items: BE
-- [x] Story 1: get shopping list items: FE
+- [x] Story1: get shopping list items: BE
+- [x] Story1: get shopping list items: FE
+- [x] Story2: add shopping list item: BE
 
