@@ -11,6 +11,11 @@ type Item struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`
 	Quantity int    `json:"quantity"`
+	Picked   bool   `json:"picked"`
+}
+
+type ItemUpdate struct {
+	Picked bool `json:"picked"`
 }
 
 type Handler struct {
@@ -48,4 +53,18 @@ func (h *Handler) DeleteItem(c *echo.Context) error {
 	}
 	delete(h.Items, id)
 	return c.NoContent(http.StatusOK)
+}
+
+// UpdateItem updates the item with the ID from the path `items/:id`
+func (h *Handler) UpdateItem(c *echo.Context) error {
+	id := c.Param("id")
+	if _, ok := h.Items[id]; !ok {
+		return c.String(http.StatusNotFound, fmt.Sprintf("id (%s) not found", id))
+	}
+	update := ItemUpdate{}
+	if err := c.Bind(&update); err != nil {
+		return fmt.Errorf("failed to Bind in UpdateItem: %w", err)
+	}
+	h.Items[id].Picked = update.Picked
+	return c.JSON(http.StatusOK, h.Items[id])
 }

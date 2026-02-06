@@ -23,7 +23,7 @@ func TestGetItemList(t *testing.T) {
 		},
 	}
 
-	expectedJSON := `[{"id":"1","name":"Apple","quantity":5},{"id":"2","name":"Orange","quantity":3}]`
+	expectedJSON := `[{"id":"1","name":"Apple","quantity":5,"picked":false},{"id":"2","name":"Orange","quantity":3,"picked":false}]`
 
 	require.NoError(t, h.GetItemList(c))
 	require.Equal(t, http.StatusOK, rec.Code)
@@ -31,7 +31,7 @@ func TestGetItemList(t *testing.T) {
 }
 
 func TestCreateItem(t *testing.T) {
-	const itemJSON = `{"id":"1","name":"Apple","quantity":5}`
+	const itemJSON = `{"id":"1","name":"Apple","quantity":5,"picked":false}`
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(itemJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -93,5 +93,56 @@ func TestDeleteItem(t *testing.T) {
 	require.NoError(t, h.DeleteItem(c))
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Empty(t, rec.Body.String())
+	require.Equal(t, h.Items, expectedItems)
+}
+
+func TestUpdateItemNotFound(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPut, "/item/999", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/item/:id")
+	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
+
+	h := &handler.Handler{
+		Items: map[string]*handler.Item{
+			"1": {Id: "1", Name: "Apple", Quantity: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3},
+			"3": {Id: "3", Name: "Bread", Quantity: 2},
+		},
+	}
+
+	require.NoError(t, h.UpdateItem(c))
+	require.Equal(t, http.StatusNotFound, rec.Code)
+	require.Equal(t, "id (999) not found", rec.Body.String())
+}
+
+func TestUpdateItem(t *testing.T) {
+	const updateJSON = `{"picked":true}`
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/item/2", strings.NewReader(updateJSON))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/item/:id")
+	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
+
+	h := &handler.Handler{
+		Items: map[string]*handler.Item{
+			"1": {Id: "1", Name: "Apple", Quantity: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3},
+			"3": {Id: "3", Name: "Bread", Quantity: 1},
+		},
+	}
+
+	expectedItems := map[string]*handler.Item{
+		"1": {Id: "1", Name: "Apple", Quantity: 5},
+		"2": {Id: "2", Name: "Orange", Quantity: 3, Picked: true},
+		"3": {Id: "3", Name: "Bread", Quantity: 1},
+	}
+
+	require.NoError(t, h.UpdateItem(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.JSONEq(t, `{"id":"2","name":"Orange","quantity":3,"picked":true}`, rec.Body.String())
 	require.Equal(t, h.Items, expectedItems)
 }
