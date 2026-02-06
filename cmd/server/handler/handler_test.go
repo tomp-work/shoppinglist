@@ -47,3 +47,51 @@ func TestCreateItem(t *testing.T) {
 	require.JSONEq(t, itemJSON, rec.Body.String())
 	require.Equal(t, h.Items, map[string]*handler.Item{"1": {Id: "1", Name: "Apple", Quantity: 5}})
 }
+
+func TestDeleteItemNotFound(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodDelete, "/item/999", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/item/:id")
+	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
+
+	h := &handler.Handler{
+		Items: map[string]*handler.Item{
+			"1": {Id: "1", Name: "Apple", Quantity: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3},
+			"3": {Id: "3", Name: "Bread", Quantity: 2},
+		},
+	}
+
+	require.NoError(t, h.DeleteItem(c))
+	require.Equal(t, http.StatusNotFound, rec.Code)
+	require.Equal(t, "id (999) not found", rec.Body.String())
+}
+
+func TestDeleteItem(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodDelete, "/item/2", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/item/:id")
+	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
+
+	h := &handler.Handler{
+		Items: map[string]*handler.Item{
+			"1": {Id: "1", Name: "Apple", Quantity: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3},
+			"3": {Id: "3", Name: "Bread", Quantity: 1},
+		},
+	}
+
+	expectedItems := map[string]*handler.Item{
+		"1": {Id: "1", Name: "Apple", Quantity: 5},
+		"3": {Id: "3", Name: "Bread", Quantity: 1},
+	}
+
+	require.NoError(t, h.DeleteItem(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Empty(t, rec.Body.String())
+	require.Equal(t, h.Items, expectedItems)
+}

@@ -39,3 +39,13 @@ func (h *Handler) CreateItem(c *echo.Context) error {
 	h.Items[item.Id] = &item
 	return c.JSON(http.StatusCreated, &item)
 }
+
+// DeleteItem deletes the item with the given ID from the path `items/:id`
+func (h *Handler) DeleteItem(c *echo.Context) error {
+	id := c.Param("id")
+	if _, ok := h.Items[id]; !ok {
+		return c.String(http.StatusNotFound, fmt.Sprintf("id (%s) not found", id))
+	}
+	delete(h.Items, id)
+	return c.NoContent(http.StatusOK)
+}
