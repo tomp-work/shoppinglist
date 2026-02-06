@@ -1,7 +1,14 @@
-import { Card, Divider, Table } from 'antd';
-import { useQuery } from '@tanstack/react-query'
-import AddForm from './AddForm.tsx'
-import './App.css'
+import { Button, Card, Divider, Table } from 'antd';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AddForm from './AddForm.tsx';
+import DeleteAction from './DeleteAction.tsx';
+import './App.css';
+
+type Item = {
+  id?: string;
+  name: string;
+  quantity: number;
+}
 
 const getItemList = async () => {
     const res = await fetch("http://localhost:1323/item");
@@ -39,6 +46,11 @@ export default function ShoppingList() {
             title: 'Quantity',
             dataIndex: 'quantity',
             key: 'quantity',
+        },
+        {
+            title: "Actions",
+            key: "actions",
+            render: (_: any, item: Item) => (<DeleteAction id={item.id ?? ''} />),
         },
     ];
 
