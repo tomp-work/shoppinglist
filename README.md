@@ -12,6 +12,7 @@
 
 ## TODO
 
+- [ ] Story6: change order of shopping list items: FE
 - [ ] Improve FE status/error handling
 - [ ] Consider using UUIDs.
 
@@ -26,4 +27,6 @@
 - [x] Story3: delete shopping list item: FE
 - [x] Story4: Cross off shopping list item: BE
 - [x] Story4: Cross off shopping list item: FE
+- [x] Story5: Persist the list
+- [x] Story6: change order of shopping list items: BE
 

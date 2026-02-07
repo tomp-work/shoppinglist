@@ -18,18 +18,21 @@ func main() {
 				Name:     "bread",
 				Quantity: 1,
 				Picked:   true,
+				SeqNum:   0,
 			},
 			"2": {
 				Id:       "2",
 				Name:     "apple",
 				Quantity: 3,
 				Picked:   false,
+				SeqNum:   1,
 			},
 			"3": {
 				Id:       "3",
 				Name:     "orange",
 				Quantity: 4,
 				Picked:   false,
+				SeqNum:   2,
 			},
 		},
 	}
@@ -39,6 +42,8 @@ func main() {
 	e.POST("/item", handler.CreateItem)
 	e.DELETE("/item/:id", handler.DeleteItem)
 	e.PUT("/item/:id", handler.UpdateItem)
+	e.POST("/item/:id/up", handler.MoveItemUp)
+	e.POST("/item/:id/down", handler.MoveItemUp)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
