@@ -19,6 +19,7 @@ func main() {
 				Quantity: 1,
 				Picked:   true,
 				SeqNum:   0,
+				Price:    5,
 			},
 			"2": {
 				Id:       "2",
@@ -26,6 +27,7 @@ func main() {
 				Quantity: 3,
 				Picked:   false,
 				SeqNum:   1,
+				Price:    10,
 			},
 			"3": {
 				Id:       "3",
@@ -33,6 +35,7 @@ func main() {
 				Quantity: 4,
 				Picked:   false,
 				SeqNum:   2,
+				Price:    15,
 			},
 		},
 	}
@@ -44,6 +47,7 @@ func main() {
 	e.PUT("/item/:id", handler.UpdateItem)
 	e.POST("/item/:id/up", handler.MoveItemUp)
 	e.POST("/item/:id/down", handler.MoveItemDown)
+	e.GET("/list/total", handler.CalcListTotalPrice)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)

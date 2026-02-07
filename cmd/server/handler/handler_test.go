@@ -18,16 +18,16 @@ func TestGetItemList(t *testing.T) {
 
 	h := &handler.Handler{
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 1},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 0},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 1, Price: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 0, Price: 10},
+			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2, Price: 15},
 		},
 	}
 
 	expectedJSON := `[
-		{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum": 0},
-		{"id":"1","name":"Apple","quantity":5,"picked":false,"seqnum": 1},
-		{"id":"3","name":"Bread","quantity":1,"picked":false,"seqnum": 2}
+		{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum": 0,"price":10},
+		{"id":"1","name":"Apple","quantity":5,"picked":false,"seqnum": 1,"price":5},
+		{"id":"3","name":"Bread","quantity":1,"picked":false,"seqnum": 2,"price":15}
 	]`
 
 	require.NoError(t, h.GetItemList(c))
@@ -36,7 +36,7 @@ func TestGetItemList(t *testing.T) {
 }
 
 func TestCreateItem(t *testing.T) {
-	const itemJSON = `{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum":1}`
+	const itemJSON = `{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum":1,"price":10}`
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(itemJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -45,15 +45,15 @@ func TestCreateItem(t *testing.T) {
 
 	h := &handler.Handler{
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
+			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
 		},
 	}
 
 	require.NoError(t, h.CreateItem(c))
 	require.Equal(t, http.StatusCreated, rec.Code)
 	require.JSONEq(t, itemJSON, rec.Body.String())
-	require.Equal(t, h.Items["1"], &handler.Item{Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0})
-	require.Equal(t, h.Items["2"], &handler.Item{Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1})
+	require.Equal(t, h.Items["1"], &handler.Item{Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5})
+	require.Equal(t, h.Items["2"], &handler.Item{Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10})
 }
 
 func TestDeleteItemNotFound(t *testing.T) {
@@ -151,7 +151,7 @@ func TestUpdateItem(t *testing.T) {
 
 	require.NoError(t, h.UpdateItem(c))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.JSONEq(t, `{"id":"2","name":"Orange","quantity":3,"seqnum":1,"picked":true}`, rec.Body.String())
+	require.JSONEq(t, `{"id":"2","name":"Orange","quantity":3,"seqnum":1,"picked":true,"price":0}`, rec.Body.String())
 	require.Equal(t, h.Items, expectedItems)
 }
 
@@ -311,4 +311,24 @@ func TestMoveItemDown(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Empty(t, rec.Body.String())
 	require.Equal(t, h.Items, expectedItems)
+}
+
+func TestCalcTotalListPrice(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/list/total")
+
+	h := &handler.Handler{
+		Items: map[string]*handler.Item{
+			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10},
+			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2, Price: 15},
+		},
+	}
+
+	require.NoError(t, h.CalcListTotalPrice(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.JSONEq(t, `{"totalprice": 30}`, rec.Body.String())
 }

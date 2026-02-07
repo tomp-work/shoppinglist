@@ -14,10 +14,15 @@ type Item struct {
 	Quantity int    `json:"quantity"`
 	Picked   bool   `json:"picked"`
 	SeqNum   int    `json:"seqnum"`
+	Price    int    `json:"price"`
 }
 
 type ItemUpdate struct {
 	Picked bool `json:"picked"`
+}
+
+type PriceReport struct {
+	TotalPrice int `json:"totalprice"`
 }
 
 type Handler struct {
@@ -115,4 +120,14 @@ func (h *Handler) MoveItemDown(c *echo.Context) error {
 	items[seqNum].SeqNum++
 	items[seqNum+1].SeqNum--
 	return c.NoContent(http.StatusOK)
+}
+
+func (h *Handler) CalcListTotalPrice(c *echo.Context) error {
+	report := PriceReport{
+		TotalPrice: 0,
+	}
+	for _, item := range h.Items {
+		report.TotalPrice += item.Price
+	}
+	return c.JSON(http.StatusOK, &report)
 }
