@@ -9,10 +9,10 @@
 - `go get github.com/labstack/echo/v5`
 - `go get github.com/stretchr/testify`
 - `go mod tidy`
+- `npm install @ant-design/icons@6.x --save`
 
 ## TODO
 
-- [ ] Story6: change order of shopping list items: FE
 - [ ] Improve FE status/error handling
 - [ ] Consider using UUIDs.
 
@@ -29,4 +29,4 @@
 - [x] Story4: Cross off shopping list item: FE
 - [x] Story5: Persist the list
 - [x] Story6: change order of shopping list items: BE
-
+- [x] Story6: change order of shopping list items: FE

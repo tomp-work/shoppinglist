@@ -1,6 +1,7 @@
 import { Button } from 'antd';
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import './App.css'
+import { DeleteOutlined } from '@ant-design/icons';
 
 const deleteItem = async (id: string) => {
     const response = await fetch(`http://localhost:1323/item/${id}`, {
@@ -40,7 +41,7 @@ export default function DeleteAction({ id }: DeleteActionProps) {
 
     return (
         <Button danger type="link" onClick={() => onClick(id)}>
-            Delete
+            <DeleteOutlined />
         </Button>
     );
 }

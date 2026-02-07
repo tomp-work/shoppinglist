@@ -43,7 +43,7 @@ func main() {
 	e.DELETE("/item/:id", handler.DeleteItem)
 	e.PUT("/item/:id", handler.UpdateItem)
 	e.POST("/item/:id/up", handler.MoveItemUp)
-	e.POST("/item/:id/down", handler.MoveItemUp)
+	e.POST("/item/:id/down", handler.MoveItemDown)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)

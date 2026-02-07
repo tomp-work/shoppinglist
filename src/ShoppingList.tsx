@@ -4,6 +4,8 @@ import AddForm from './AddForm.tsx';
 import DeleteAction from './DeleteAction.tsx';
 import PickedCheckbox from './PickedCheckbox.tsx';
 import './App.css';
+import MoveUpAction from './MoveUpAction.tsx';
+import MoveDownAction from './MoveDownAction.tsx';
 
 type Item = {
     id?: string;
@@ -57,7 +59,13 @@ export default function ShoppingList() {
         {
             title: "Actions",
             key: "actions",
-            render: (_: any, item: Item) => (<DeleteAction id={item.id ?? ''} />),
+            render: (_: any, item: Item) => (
+                <>
+                    <DeleteAction id={item.id ?? ''} />
+                    <MoveUpAction id={item.id ?? ''} />
+                    <MoveDownAction id={item.id ?? ''} />
+                </>
+            ),
         },
     ];
 
