@@ -1,13 +1,15 @@
-import { Button, Card, Divider, Table } from 'antd';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Card, Divider, Table } from 'antd';
+import { useQuery } from '@tanstack/react-query';
 import AddForm from './AddForm.tsx';
 import DeleteAction from './DeleteAction.tsx';
+import PickedCheckbox from './PickedCheckbox.tsx';
 import './App.css';
 
 type Item = {
-  id?: string;
-  name: string;
-  quantity: number;
+    id?: string;
+    name: string;
+    quantity: number;
+    picked: boolean;
 }
 
 const getItemList = async () => {
@@ -46,6 +48,11 @@ export default function ShoppingList() {
             title: 'Quantity',
             dataIndex: 'quantity',
             key: 'quantity',
+        },
+        {
+            title: 'Picked',
+            key: 'picked',
+            render: (_: any, item: Item) => (<PickedCheckbox id={item.id ?? ''} picked={item.picked} />),
         },
         {
             title: "Actions",

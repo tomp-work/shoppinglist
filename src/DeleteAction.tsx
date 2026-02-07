@@ -30,7 +30,7 @@ export default function DeleteAction({ id }: DeleteActionProps) {
         },
     });
 
-    const handleDelete = (id: undefined | string) => {
+    const onClick = (id: undefined | string) => {
         if (!id) {
             console.log('id is undefined');
             return;
@@ -39,7 +39,7 @@ export default function DeleteAction({ id }: DeleteActionProps) {
     };
 
     return (
-        <Button danger type="link" onClick={() => handleDelete(id)}>
+        <Button danger type="link" onClick={() => onClick(id)}>
             Delete
         </Button>
     );
