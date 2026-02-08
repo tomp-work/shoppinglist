@@ -17,6 +17,7 @@ func TestGetItemList(t *testing.T) {
 	c := e.NewContext(nil, rec)
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 1, Price: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 0, Price: 10},
@@ -44,6 +45,7 @@ func TestCreateItem(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	h := &handler.Handler{
+		ItemMaxID: 1,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
 		},
@@ -65,6 +67,7 @@ func TestDeleteItemNotFound(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3},
@@ -86,6 +89,7 @@ func TestDeleteItem(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3},
@@ -113,6 +117,7 @@ func TestUpdateItemNotFound(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3},
@@ -136,6 +141,7 @@ func TestUpdateItem(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
@@ -164,6 +170,7 @@ func TestMoveItemUpNotFound(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3},
@@ -186,6 +193,7 @@ func TestMoveItemUpAlreadyTop(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "1"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
@@ -215,6 +223,7 @@ func TestMoveItemUp(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
@@ -243,6 +252,7 @@ func TestMoveItemDownNotFound(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "999"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3},
@@ -265,6 +275,7 @@ func TestMoveItemDownAlreadyBottom(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "3"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
@@ -294,6 +305,7 @@ func TestMoveItemDown(t *testing.T) {
 	c.SetPathValues(echo.PathValues{{Name: "id", Value: "2"}})
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
@@ -321,6 +333,7 @@ func TestCalcTotalListPrice(t *testing.T) {
 	c.SetPath("/list/total")
 
 	h := &handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
 			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10},

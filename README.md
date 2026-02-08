@@ -13,8 +13,8 @@
 
 ## TODO
 
+- [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
-- [ ] Consider using UUIDs.
 
 ## DONE
 
@@ -32,3 +32,4 @@
 - [x] Story6: change order of shopping list items: FE
 - [x] Story7: shopping list total price: BE
 - [x] Story7: shopping list total price: FE
+- [x] Fix generateId bug.

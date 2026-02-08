@@ -12,6 +12,7 @@ func main() {
 	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
 
 	handler := handler.Handler{
+		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
 			"1": {
 				Id:       "1",
@@ -38,6 +39,10 @@ func main() {
 				Price:    15,
 			},
 		},
+	}
+	// Double check ItemMaxID matches number of items in map.
+	if handler.ItemMaxID != len(handler.Items) {
+		panic("ItemMaxID is invalid")
 	}
 
 	// Routing.

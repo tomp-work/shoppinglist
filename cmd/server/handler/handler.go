@@ -26,12 +26,13 @@ type PriceReport struct {
 }
 
 type Handler struct {
-	Items map[string]*Item
+	ItemMaxID int
+	Items     map[string]*Item
 }
 
 func (h *Handler) generateID() string {
-	// TODO: Consider using UUIDs.
-	return fmt.Sprintf("%d", len(h.Items)+1)
+	h.ItemMaxID++
+	return fmt.Sprintf("%d", h.ItemMaxID)
 }
 
 // sortedItems returns a slice containing the items from the Items map sorted by sequence number.
