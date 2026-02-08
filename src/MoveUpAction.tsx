@@ -14,7 +14,7 @@ const moveItemUp = async (id: string) => {
 };
 
 type MoveUpActionProps = {
-  id: string;
+    id: string;
 };
 
 export default function MoveUpAction({ id }: MoveUpActionProps) {
@@ -25,6 +25,7 @@ export default function MoveUpAction({ id }: MoveUpActionProps) {
         onSuccess: (id) => {
             console.log('Item moved up:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
         },
         onError: (error) => {
             console.error('Error moving item up:', error);

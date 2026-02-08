@@ -25,6 +25,7 @@ export default function MoveDownAction({ id }: MoveDownActionProps) {
         onSuccess: (id) => {
             console.log('Item moved down:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
         },
         onError: (error) => {
             console.error('Error moving item down:', error);

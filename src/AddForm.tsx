@@ -6,11 +6,13 @@ type Item = {
   id?: string;
   name: string;
   quantity: number;
+  price: number;
 }
 
 type FieldType = {
   name?: string;
   quantity?: string;
+  price: number;
 };
 
 export default function AddForm() {
@@ -36,6 +38,7 @@ export default function AddForm() {
     onSuccess: (data) => {
       console.log("Item created:", data);
       queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ["totalprice"] });
     },
     onError: (error) => {
       console.error("Error creating item:", error);
@@ -47,6 +50,7 @@ export default function AddForm() {
     createMutation.mutate({
       name: values.name ?? '',
       quantity: (values.quantity ?? 0) as number,
+      price: (values.price ?? 0) as number,
     });
   };
 
@@ -75,6 +79,13 @@ export default function AddForm() {
         label="Quantity"
         name="quantity"
         rules={[{ required: true, message: 'Please input item quantity!' }]}
+      >
+        <InputNumber />
+      </Form.Item>
+      <Form.Item<FieldType>
+        label="Price"
+        name="price"
+        rules={[{ required: true, message: 'Please input item price!' }]}
       >
         <InputNumber />
       </Form.Item>

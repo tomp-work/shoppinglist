@@ -3,15 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import AddForm from './AddForm.tsx';
 import DeleteAction from './DeleteAction.tsx';
 import PickedCheckbox from './PickedCheckbox.tsx';
-import './App.css';
 import MoveUpAction from './MoveUpAction.tsx';
 import MoveDownAction from './MoveDownAction.tsx';
+import TotalPriceTableSummary from './TotalPriceTableSummary.tsx';
+import './App.css';
 
 type Item = {
     id?: string;
     name: string;
     quantity: number;
     picked: boolean;
+    price: number;
 }
 
 const getItemList = async () => {
@@ -52,6 +54,11 @@ export default function ShoppingList() {
             key: 'quantity',
         },
         {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+        },
+        {
             title: 'Picked',
             key: 'picked',
             render: (_: any, item: Item) => (<PickedCheckbox id={item.id ?? ''} picked={item.picked} />),
@@ -73,7 +80,14 @@ export default function ShoppingList() {
         <Card title="Shopping List">
             <AddForm />
             <Divider />
-            <Table bordered rowKey="id" dataSource={data} columns={columns} />
-        </Card>
+            <Table
+                bordered
+                rowKey="id"
+                dataSource={data}
+                columns={columns}
+                summary={() => <TotalPriceTableSummary />}
+            />
+            <Divider />
+        </Card >
     )
 }

@@ -34,6 +34,7 @@ export default function PickedCheckbox({ id, picked }: PickedCheckboxProps) {
         onSuccess: (id) => {
             console.log('Item updated:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
         },
         onError: (error) => {
             console.error('Error deleting item:', error);

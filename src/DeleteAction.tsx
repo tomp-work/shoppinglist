@@ -14,7 +14,7 @@ const deleteItem = async (id: string) => {
 };
 
 type DeleteActionProps = {
-  id: string;
+    id: string;
 };
 
 export default function DeleteAction({ id }: DeleteActionProps) {
@@ -25,6 +25,7 @@ export default function DeleteAction({ id }: DeleteActionProps) {
         onSuccess: (id) => {
             console.log('Item deleted:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
+            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
         },
         onError: (error) => {
             console.error('Error deleting item:', error);

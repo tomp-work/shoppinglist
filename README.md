@@ -13,7 +13,6 @@
 
 ## TODO
 
-- [ ] Story7: shopping list total price: FE
 - [ ] Improve FE status/error handling
 - [ ] Consider using UUIDs.
 
@@ -32,3 +31,4 @@
 - [x] Story6: change order of shopping list items: BE
 - [x] Story6: change order of shopping list items: FE
 - [x] Story7: shopping list total price: BE
+- [x] Story7: shopping list total price: FE
