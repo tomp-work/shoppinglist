@@ -5,6 +5,7 @@ import DeleteAction from './DeleteAction.tsx';
 import PickedCheckbox from './PickedCheckbox.tsx';
 import MoveUpAction from './MoveUpAction.tsx';
 import MoveDownAction from './MoveDownAction.tsx';
+import SpendingLimitForm from './SpendingLimitForm.tsx';
 import TotalPriceTableSummary from './TotalPriceTableSummary.tsx';
 import './App.css';
 
@@ -88,6 +89,7 @@ export default function ShoppingList() {
                 summary={() => <TotalPriceTableSummary />}
             />
             <Divider />
+            <SpendingLimitForm />
         </Card >
     )
 }

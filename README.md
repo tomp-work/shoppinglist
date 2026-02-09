@@ -13,7 +13,6 @@
 
 ## TODO
 
-- [ ] Story8: spending limit: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
 
@@ -36,4 +35,6 @@
 - [x] Fix generateId bug (bug: IDs were being reused after delete).
 - [x] Story8: spending limit: BE
 - [x] Refactor: total calculation is done on create/delete and persisted in ListDetails.
+- [x] Story8: spending limit: FE
+
 

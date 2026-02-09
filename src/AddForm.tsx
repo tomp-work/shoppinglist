@@ -60,7 +60,7 @@ export default function AddForm() {
 
   return (
     <Form
-      name="basic"
+      name="add"
       initialValues={{
         quantity: 1
       }}
