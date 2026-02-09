@@ -25,9 +25,14 @@ type PriceReport struct {
 	TotalPrice int `json:"totalprice"`
 }
 
+type ListDetails struct {
+	SpendingLimit int `json:"spendingLimit"`
+}
+
 type Handler struct {
-	ItemMaxID int
-	Items     map[string]*Item
+	ItemMaxID   int
+	Items       map[string]*Item
+	ListDetails ListDetails
 }
 
 func (h *Handler) generateID() string {
@@ -37,10 +42,12 @@ func (h *Handler) generateID() string {
 
 // sortedItems returns a slice containing the items from the Items map sorted by sequence number.
 func (h *Handler) sortedItems() []*Item {
+	// Add items from the map to a slice.
 	items := []*Item{}
 	for _, v := range h.Items {
 		items = append(items, v)
 	}
+	// Sort the items slice in seqnum order.
 	slices.SortFunc(items, func(a *Item, b *Item) int { return a.SeqNum - b.SeqNum })
 	return items
 }
@@ -131,4 +138,17 @@ func (h *Handler) CalcListTotalPrice(c *echo.Context) error {
 		report.TotalPrice += item.Price
 	}
 	return c.JSON(http.StatusOK, &report)
+}
+
+// GetListDetails gets the list details (current implementation only supports one single list).
+func (h *Handler) GetListDetails(c *echo.Context) error {
+	return c.JSON(http.StatusOK, &h.ListDetails)
+}
+
+// UpdateListDetails updates the list details (current implementation only supports one single list).
+func (h *Handler) UpdateListDetails(c *echo.Context) error {
+	if err := c.Bind(&h.ListDetails); err != nil {
+		return fmt.Errorf("failed to Bind in UpdateListDetails: %w", err)
+	}
+	return c.JSON(http.StatusOK, &h.ListDetails)
 }

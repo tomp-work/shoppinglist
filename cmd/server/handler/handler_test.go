@@ -345,3 +345,43 @@ func TestCalcTotalListPrice(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.JSONEq(t, `{"totalprice": 30}`, rec.Body.String())
 }
+
+func TestGetListDetails(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/list")
+
+	h := &handler.Handler{
+		ListDetails: handler.ListDetails{
+			SpendingLimit: 200,
+		},
+	}
+
+	require.NoError(t, h.GetListDetails(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.JSONEq(t, `{"spendingLimit":200}`, rec.Body.String())
+}
+
+func TestUpdateListDetails(t *testing.T) {
+	const updateJSON = `{"spendingLimit":350}`
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", strings.NewReader(updateJSON))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/list")
+
+	h := &handler.Handler{
+		ListDetails: handler.ListDetails{
+			SpendingLimit: 200,
+		},
+	}
+
+	require.NoError(t, h.UpdateListDetails(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, handler.ListDetails{SpendingLimit: 350}, h.ListDetails)
+	require.JSONEq(t, `{"spendingLimit":350}`, rec.Body.String())
+}

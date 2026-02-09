@@ -45,14 +45,17 @@ func main() {
 		panic("ItemMaxID is invalid")
 	}
 
-	// Routing.
+	// List item routing.
 	e.GET("/item", handler.GetItemList)
 	e.POST("/item", handler.CreateItem)
 	e.DELETE("/item/:id", handler.DeleteItem)
 	e.PUT("/item/:id", handler.UpdateItem)
 	e.POST("/item/:id/up", handler.MoveItemUp)
 	e.POST("/item/:id/down", handler.MoveItemDown)
+	// List details routing.
 	e.GET("/list/total", handler.CalcListTotalPrice)
+	e.GET("/list", handler.GetListDetails)
+	e.PUT("/list", handler.UpdateListDetails)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)

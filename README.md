@@ -13,6 +13,7 @@
 
 ## TODO
 
+- [ ] Story8: spending limit: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
 
@@ -32,4 +33,5 @@
 - [x] Story6: change order of shopping list items: FE
 - [x] Story7: shopping list total price: BE
 - [x] Story7: shopping list total price: FE
-- [x] Fix generateId bug.
+- [x] Fix generateId bug (bug: IDs were being reused after delete).
+- [x] Story8: spending limit: BE
