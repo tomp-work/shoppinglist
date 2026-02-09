@@ -25,7 +25,7 @@ export default function MoveUpAction({ id }: MoveUpActionProps) {
         onSuccess: (id) => {
             console.log('Item moved up:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
-            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
+            queryClient.invalidateQueries({ queryKey: ["listdetails"] });
         },
         onError: (error) => {
             console.error('Error moving item up:', error);

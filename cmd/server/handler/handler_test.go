@@ -49,6 +49,10 @@ func TestCreateItem(t *testing.T) {
 		Items: map[string]*handler.Item{
 			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
 		},
+		ListDetails: handler.ListDetails{
+			TotalPrice:    5,
+			SpendingLimit: 50,
+		},
 	}
 
 	require.NoError(t, h.CreateItem(c))
@@ -56,6 +60,7 @@ func TestCreateItem(t *testing.T) {
 	require.JSONEq(t, itemJSON, rec.Body.String())
 	require.Equal(t, h.Items["1"], &handler.Item{Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5})
 	require.Equal(t, h.Items["2"], &handler.Item{Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10})
+	require.Equal(t, 15, h.ListDetails.TotalPrice)
 }
 
 func TestDeleteItemNotFound(t *testing.T) {
@@ -69,15 +74,20 @@ func TestDeleteItemNotFound(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3},
-			"3": {Id: "3", Name: "Bread", Quantity: 2},
+			"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3, Price: 10},
+			"3": {Id: "3", Name: "Bread", Quantity: 2, Price: 15},
+		},
+		ListDetails: handler.ListDetails{
+			TotalPrice:    30,
+			SpendingLimit: 50,
 		},
 	}
 
 	require.NoError(t, h.DeleteItem(c))
 	require.Equal(t, http.StatusNotFound, rec.Code)
 	require.Equal(t, "id (999) not found", rec.Body.String())
+	require.Equal(t, 30, h.ListDetails.TotalPrice)
 }
 
 func TestDeleteItem(t *testing.T) {
@@ -91,21 +101,26 @@ func TestDeleteItem(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3},
-			"3": {Id: "3", Name: "Bread", Quantity: 1},
+			"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
+			"2": {Id: "2", Name: "Orange", Quantity: 3, Price: 10},
+			"3": {Id: "3", Name: "Bread", Quantity: 1, Price: 15},
+		},
+		ListDetails: handler.ListDetails{
+			TotalPrice:    30,
+			SpendingLimit: 50,
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5},
-		"3": {Id: "3", Name: "Bread", Quantity: 1},
+		"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
+		"3": {Id: "3", Name: "Bread", Quantity: 1, Price: 15},
 	}
 
 	require.NoError(t, h.DeleteItem(c))
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Empty(t, rec.Body.String())
 	require.Equal(t, h.Items, expectedItems)
+	require.Equal(t, 20, h.ListDetails.TotalPrice)
 }
 
 func TestUpdateItemNotFound(t *testing.T) {
@@ -325,27 +340,6 @@ func TestMoveItemDown(t *testing.T) {
 	require.Equal(t, h.Items, expectedItems)
 }
 
-func TestCalcTotalListPrice(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/list/total")
-
-	h := &handler.Handler{
-		ItemMaxID: 3,
-		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2, Price: 15},
-		},
-	}
-
-	require.NoError(t, h.CalcListTotalPrice(c))
-	require.Equal(t, http.StatusOK, rec.Code)
-	require.JSONEq(t, `{"totalprice": 30}`, rec.Body.String())
-}
-
 func TestGetListDetails(t *testing.T) {
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -356,13 +350,14 @@ func TestGetListDetails(t *testing.T) {
 
 	h := &handler.Handler{
 		ListDetails: handler.ListDetails{
+			TotalPrice:    50,
 			SpendingLimit: 200,
 		},
 	}
 
 	require.NoError(t, h.GetListDetails(c))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.JSONEq(t, `{"spendingLimit":200}`, rec.Body.String())
+	require.JSONEq(t, `{"totalprice":50,"spendingLimit":200}`, rec.Body.String())
 }
 
 func TestUpdateListDetails(t *testing.T) {
@@ -377,11 +372,12 @@ func TestUpdateListDetails(t *testing.T) {
 	h := &handler.Handler{
 		ListDetails: handler.ListDetails{
 			SpendingLimit: 200,
+			TotalPrice:    150,
 		},
 	}
 
 	require.NoError(t, h.UpdateListDetails(c))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, handler.ListDetails{SpendingLimit: 350}, h.ListDetails)
-	require.JSONEq(t, `{"spendingLimit":350}`, rec.Body.String())
+	require.Equal(t, handler.ListDetails{SpendingLimit: 350, TotalPrice: 150}, h.ListDetails)
+	require.JSONEq(t, `{"spendingLimit":350,"totalprice":150}`, rec.Body.String())
 }

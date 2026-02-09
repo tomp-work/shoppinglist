@@ -38,7 +38,7 @@ export default function AddForm() {
     onSuccess: (data) => {
       console.log("Item created:", data);
       queryClient.invalidateQueries({ queryKey: ["items"] });
-      queryClient.invalidateQueries({ queryKey: ["totalprice"] });
+      queryClient.invalidateQueries({ queryKey: ["listdetails"] });
     },
     onError: (error) => {
       console.error("Error creating item:", error);

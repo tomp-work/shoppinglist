@@ -21,11 +21,8 @@ type ItemUpdate struct {
 	Picked bool `json:"picked"`
 }
 
-type PriceReport struct {
-	TotalPrice int `json:"totalprice"`
-}
-
 type ListDetails struct {
+	TotalPrice    int `json:"totalprice"`
 	SpendingLimit int `json:"spendingLimit"`
 }
 
@@ -65,6 +62,7 @@ func (h *Handler) CreateItem(c *echo.Context) error {
 	item.Id = h.generateID()
 	item.SeqNum = len(h.Items)
 	h.Items[item.Id] = &item
+	h.ListDetails.TotalPrice += item.Price
 	return c.JSON(http.StatusCreated, &item)
 }
 
@@ -74,6 +72,7 @@ func (h *Handler) DeleteItem(c *echo.Context) error {
 	if _, ok := h.Items[id]; !ok {
 		return c.String(http.StatusNotFound, fmt.Sprintf("id (%s) not found", id))
 	}
+	h.ListDetails.TotalPrice -= h.Items[id].Price
 	delete(h.Items, id)
 	return c.NoContent(http.StatusOK)
 }
@@ -128,16 +127,6 @@ func (h *Handler) MoveItemDown(c *echo.Context) error {
 	items[seqNum].SeqNum++
 	items[seqNum+1].SeqNum--
 	return c.NoContent(http.StatusOK)
-}
-
-func (h *Handler) CalcListTotalPrice(c *echo.Context) error {
-	report := PriceReport{
-		TotalPrice: 0,
-	}
-	for _, item := range h.Items {
-		report.TotalPrice += item.Price
-	}
-	return c.JSON(http.StatusOK, &report)
 }
 
 // GetListDetails gets the list details (current implementation only supports one single list).

@@ -39,10 +39,22 @@ func main() {
 				Price:    15,
 			},
 		},
+		ListDetails: handler.ListDetails{
+			TotalPrice:    30,
+			SpendingLimit: 100,
+		},
 	}
 	// Double check ItemMaxID matches number of items in map.
 	if handler.ItemMaxID != len(handler.Items) {
 		panic("ItemMaxID is invalid")
+	}
+	// Double check totalPrice equals sum of item prices.
+	expectedTotalPrice := 0
+	for _, item := range handler.Items {
+		expectedTotalPrice += item.Price
+	}
+	if handler.ListDetails.TotalPrice != expectedTotalPrice {
+		panic("TotalPrice is incorrect")
 	}
 
 	// List item routing.
@@ -53,7 +65,6 @@ func main() {
 	e.POST("/item/:id/up", handler.MoveItemUp)
 	e.POST("/item/:id/down", handler.MoveItemDown)
 	// List details routing.
-	e.GET("/list/total", handler.CalcListTotalPrice)
 	e.GET("/list", handler.GetListDetails)
 	e.PUT("/list", handler.UpdateListDetails)
 

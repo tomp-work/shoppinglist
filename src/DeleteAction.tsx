@@ -25,7 +25,7 @@ export default function DeleteAction({ id }: DeleteActionProps) {
         onSuccess: (id) => {
             console.log('Item deleted:', id);
             queryClient.invalidateQueries({ queryKey: ["items"] });
-            queryClient.invalidateQueries({ queryKey: ["totalprice"] });
+            queryClient.invalidateQueries({ queryKey: ["listdetails"] });
         },
         onError: (error) => {
             console.error('Error deleting item:', error);

@@ -2,12 +2,13 @@ import { Table } from 'antd';
 import { useQuery } from '@tanstack/react-query'
 import './App.css'
 
-type PriceReport = {
+type ListDetails = {
     totalprice: number;
+    spendingLimit: number;
 }
 
-const calcTotalPrice = async (): Promise<PriceReport> => {
-    const res = await fetch(`http://localhost:1323/list/total`, {
+const getListDetails = async (): Promise<ListDetails> => {
+    const res = await fetch(`http://localhost:1323/list`, {
         method: 'GET',
     });
     if (!res.ok) {
@@ -19,9 +20,9 @@ const calcTotalPrice = async (): Promise<PriceReport> => {
 
 export default function TotalPriceTableSummary() {
     const { error, data } = useQuery({
-        queryKey: ['totalprice'],
+        queryKey: ['listdetails'],
         queryFn: () => {
-            return calcTotalPrice();
+            return getListDetails();
         }
     });
 
@@ -29,8 +30,8 @@ export default function TotalPriceTableSummary() {
         console.log(error);
     }
 
-    const formatTotal = (r: PriceReport | undefined): string => {
-        return `${r?.totalprice ?? 'Calculating ...'}`;
+    const formatTotal = (details: ListDetails | undefined): string => {
+        return `${details?.totalprice ?? 'Calculating ...'}`;
     };
 
     return (

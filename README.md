@@ -35,3 +35,5 @@
 - [x] Story7: shopping list total price: FE
 - [x] Fix generateId bug (bug: IDs were being reused after delete).
 - [x] Story8: spending limit: BE
+- [x] Refactor: total calculation is done on create/delete and persisted in ListDetails.
+
