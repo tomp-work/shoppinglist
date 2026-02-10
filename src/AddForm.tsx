@@ -5,13 +5,11 @@ import './App.css'
 type Item = {
   id?: string;
   name: string;
-  quantity: number;
   price: number;
 }
 
 type FieldType = {
   name?: string;
-  quantity?: string;
   price: number;
 };
 
@@ -49,7 +47,6 @@ export default function AddForm() {
     console.log('Success:', JSON.stringify(values));
     createMutation.mutate({
       name: values.name ?? '',
-      quantity: (values.quantity ?? 0) as number,
       price: (values.price ?? 0) as number,
     });
   };
@@ -62,7 +59,7 @@ export default function AddForm() {
     <Form
       name="add"
       initialValues={{
-        quantity: 1
+        price: 0
       }}
       layout='inline'
       onFinish={onFinish}
@@ -74,13 +71,6 @@ export default function AddForm() {
         rules={[{ required: true, message: 'Please input item name!' }]}
       >
         <Input />
-      </Form.Item>
-      <Form.Item<FieldType>
-        label="Quantity"
-        name="quantity"
-        rules={[{ required: true, message: 'Please input item quantity!' }]}
-      >
-        <InputNumber />
       </Form.Item>
       <Form.Item<FieldType>
         label="Price"

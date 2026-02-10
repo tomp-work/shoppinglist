@@ -45,9 +45,8 @@ export default function TotalPriceTableSummary() {
     return (
         <Table.Summary.Row>
             <Table.Summary.Cell index={0}>Total</Table.Summary.Cell>
-            <Table.Summary.Cell index={1} />
-            <Table.Summary.Cell index={2} >{formatTotal(query.data)}</Table.Summary.Cell>
-            <Table.Summary.Cell index={3} colSpan={2}>{formatAlertMsg(query.data)}</Table.Summary.Cell>
+            <Table.Summary.Cell index={1} >{formatTotal(query.data)}</Table.Summary.Cell>
+            <Table.Summary.Cell index={2} colSpan={2}>{formatAlertMsg(query.data)}</Table.Summary.Cell>
         </Table.Summary.Row>
     );
 }

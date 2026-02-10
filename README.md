@@ -11,6 +11,16 @@
 - `go mod tidy`
 - `npm install @ant-design/icons@6.x --save`
 
+## Running
+
+Backend:
+
+- `go run cmd/server/main.go`
+
+Frontend:
+
+- `npm run dev`
+
 ## TODO
 
 - [ ] Consider using UUIDs
@@ -36,5 +46,4 @@
 - [x] Story8: spending limit: BE
 - [x] Refactor: total calculation is done on create/delete and persisted in ListDetails.
 - [x] Story8: spending limit: FE
-
-
+- [x] Remove quantity from ListItem

@@ -12,7 +12,6 @@ import './App.css';
 type Item = {
     id?: string;
     name: string;
-    quantity: number;
     picked: boolean;
     price: number;
 }
@@ -48,11 +47,6 @@ export default function ShoppingList() {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-        },
-        {
-            title: 'Quantity',
-            dataIndex: 'quantity',
-            key: 'quantity',
         },
         {
             title: 'Price',
