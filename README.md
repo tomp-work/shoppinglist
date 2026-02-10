@@ -1,5 +1,10 @@
 # shoppinglist
 
+## Demo
+
+- [Screenshot](./demo/demo.png)
+- [Video](./demo/demo.webm)
+
 ## Creating the repo
 
 - `npm create vite@latest shoppinglist -- --template react-ts`
