@@ -19,16 +19,16 @@ func TestGetItemList(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 1, Price: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 0, Price: 10},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2, Price: 15},
+			"1": {Id: "1", Name: "Apple", SeqNum: 1, Price: 5},
+			"2": {Id: "2", Name: "Orange", SeqNum: 0, Price: 10},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2, Price: 15},
 		},
 	}
 
 	expectedJSON := `[
-		{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum": 0,"price":10},
-		{"id":"1","name":"Apple","quantity":5,"picked":false,"seqnum": 1,"price":5},
-		{"id":"3","name":"Bread","quantity":1,"picked":false,"seqnum": 2,"price":15}
+		{"id":"2","name":"Orange","picked":false,"seqnum": 0,"price":10},
+		{"id":"1","name":"Apple","picked":false,"seqnum": 1,"price":5},
+		{"id":"3","name":"Bread","picked":false,"seqnum": 2,"price":15}
 	]`
 
 	require.NoError(t, h.GetItemList(c))
@@ -37,7 +37,7 @@ func TestGetItemList(t *testing.T) {
 }
 
 func TestCreateItem(t *testing.T) {
-	const itemJSON = `{"id":"2","name":"Orange","quantity":3,"picked":false,"seqnum":1,"price":10}`
+	const itemJSON = `{"id":"2","name":"Orange","picked":false,"seqnum":1,"price":10}`
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(itemJSON))
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
@@ -47,7 +47,7 @@ func TestCreateItem(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 1,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0, Price: 5},
 		},
 		ListDetails: handler.ListDetails{
 			TotalPrice:    5,
@@ -58,8 +58,8 @@ func TestCreateItem(t *testing.T) {
 	require.NoError(t, h.CreateItem(c))
 	require.Equal(t, http.StatusCreated, rec.Code)
 	require.JSONEq(t, itemJSON, rec.Body.String())
-	require.Equal(t, h.Items["1"], &handler.Item{Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0, Price: 5})
-	require.Equal(t, h.Items["2"], &handler.Item{Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Price: 10})
+	require.Equal(t, h.Items["1"], &handler.Item{Id: "1", Name: "Apple", SeqNum: 0, Price: 5})
+	require.Equal(t, h.Items["2"], &handler.Item{Id: "2", Name: "Orange", SeqNum: 1, Price: 10})
 	require.Equal(t, 15, h.ListDetails.TotalPrice)
 }
 
@@ -74,9 +74,9 @@ func TestDeleteItemNotFound(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, Price: 10},
-			"3": {Id: "3", Name: "Bread", Quantity: 2, Price: 15},
+			"1": {Id: "1", Name: "Apple", Price: 5},
+			"2": {Id: "2", Name: "Orange", Price: 10},
+			"3": {Id: "3", Name: "Bread", Price: 15},
 		},
 		ListDetails: handler.ListDetails{
 			TotalPrice:    30,
@@ -101,9 +101,9 @@ func TestDeleteItem(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, Price: 10},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, Price: 15},
+			"1": {Id: "1", Name: "Apple", Price: 5},
+			"2": {Id: "2", Name: "Orange", Price: 10},
+			"3": {Id: "3", Name: "Bread", Price: 15},
 		},
 		ListDetails: handler.ListDetails{
 			TotalPrice:    30,
@@ -112,8 +112,8 @@ func TestDeleteItem(t *testing.T) {
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, Price: 5},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, Price: 15},
+		"1": {Id: "1", Name: "Apple", Price: 5},
+		"3": {Id: "3", Name: "Bread", Price: 15},
 	}
 
 	require.NoError(t, h.DeleteItem(c))
@@ -134,9 +134,9 @@ func TestUpdateItemNotFound(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3},
-			"3": {Id: "3", Name: "Bread", Quantity: 2},
+			"1": {Id: "1", Name: "Apple"},
+			"2": {Id: "2", Name: "Orange"},
+			"3": {Id: "3", Name: "Bread"},
 		},
 	}
 
@@ -158,21 +158,21 @@ func TestUpdateItem(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0},
+			"2": {Id: "2", Name: "Orange", SeqNum: 1},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2},
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-		"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1, Picked: true},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+		"1": {Id: "1", Name: "Apple", SeqNum: 0},
+		"2": {Id: "2", Name: "Orange", SeqNum: 1, Picked: true},
+		"3": {Id: "3", Name: "Bread", SeqNum: 2},
 	}
 
 	require.NoError(t, h.UpdateItem(c))
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.JSONEq(t, `{"id":"2","name":"Orange","quantity":3,"seqnum":1,"picked":true,"price":0}`, rec.Body.String())
+	require.JSONEq(t, `{"id":"2","name":"Orange","seqnum":1,"picked":true,"price":0}`, rec.Body.String())
 	require.Equal(t, h.Items, expectedItems)
 }
 
@@ -187,9 +187,9 @@ func TestMoveItemUpNotFound(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3},
-			"3": {Id: "3", Name: "Bread", Quantity: 2},
+			"1": {Id: "1", Name: "Apple"},
+			"2": {Id: "2", Name: "Orange"},
+			"3": {Id: "3", Name: "Bread"},
 		},
 	}
 
@@ -210,16 +210,16 @@ func TestMoveItemUpAlreadyTop(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0},
+			"2": {Id: "2", Name: "Orange", SeqNum: 1},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2},
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-		"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+		"1": {Id: "1", Name: "Apple", SeqNum: 0},
+		"2": {Id: "2", Name: "Orange", SeqNum: 1},
+		"3": {Id: "3", Name: "Bread", SeqNum: 2},
 	}
 
 	require.NoError(t, h.MoveItemUp(c))
@@ -240,16 +240,16 @@ func TestMoveItemUp(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0},
+			"2": {Id: "2", Name: "Orange", SeqNum: 1},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2},
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 1},
-		"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 0},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+		"1": {Id: "1", Name: "Apple", SeqNum: 1},
+		"2": {Id: "2", Name: "Orange", SeqNum: 0},
+		"3": {Id: "3", Name: "Bread", SeqNum: 2},
 	}
 
 	require.NoError(t, h.MoveItemUp(c))
@@ -269,9 +269,9 @@ func TestMoveItemDownNotFound(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5},
-			"2": {Id: "2", Name: "Orange", Quantity: 3},
-			"3": {Id: "3", Name: "Bread", Quantity: 2},
+			"1": {Id: "1", Name: "Apple"},
+			"2": {Id: "2", Name: "Orange"},
+			"3": {Id: "3", Name: "Bread"},
 		},
 	}
 
@@ -292,16 +292,16 @@ func TestMoveItemDownAlreadyBottom(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0},
+			"2": {Id: "2", Name: "Orange", SeqNum: 1},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2},
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-		"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+		"1": {Id: "1", Name: "Apple", SeqNum: 0},
+		"2": {Id: "2", Name: "Orange", SeqNum: 1},
+		"3": {Id: "3", Name: "Bread", SeqNum: 2},
 	}
 
 	require.NoError(t, h.MoveItemDown(c))
@@ -322,16 +322,16 @@ func TestMoveItemDown(t *testing.T) {
 	h := &handler.Handler{
 		ItemMaxID: 3,
 		Items: map[string]*handler.Item{
-			"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-			"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 1},
-			"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 2},
+			"1": {Id: "1", Name: "Apple", SeqNum: 0},
+			"2": {Id: "2", Name: "Orange", SeqNum: 1},
+			"3": {Id: "3", Name: "Bread", SeqNum: 2},
 		},
 	}
 
 	expectedItems := map[string]*handler.Item{
-		"1": {Id: "1", Name: "Apple", Quantity: 5, SeqNum: 0},
-		"2": {Id: "2", Name: "Orange", Quantity: 3, SeqNum: 2},
-		"3": {Id: "3", Name: "Bread", Quantity: 1, SeqNum: 1},
+		"1": {Id: "1", Name: "Apple", SeqNum: 0},
+		"2": {Id: "2", Name: "Orange", SeqNum: 2},
+		"3": {Id: "3", Name: "Bread", SeqNum: 1},
 	}
 
 	require.NoError(t, h.MoveItemDown(c))

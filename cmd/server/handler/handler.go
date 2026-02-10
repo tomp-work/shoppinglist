@@ -9,12 +9,11 @@ import (
 )
 
 type Item struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
-	Picked   bool   `json:"picked"`
-	SeqNum   int    `json:"seqnum"`
-	Price    int    `json:"price"`
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Picked bool   `json:"picked"`
+	SeqNum int    `json:"seqnum"`
+	Price  int    `json:"price"`
 }
 
 type ItemUpdate struct {
