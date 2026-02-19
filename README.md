@@ -13,6 +13,8 @@
 - `go mod init github.com/tomp-work/shoppinglist`
 - `go get github.com/labstack/echo/v5`
 - `go get github.com/stretchr/testify`
+- `go get github.com/resend/resend-go/v2`
+- `go get github.com/joho/godotenv`
 - `go mod tidy`
 - `npm install @ant-design/icons@6.x --save`
 
@@ -28,6 +30,8 @@ Frontend:
 
 ## TODO
 
+- [ ] Story9: send shopping list to email address: BE
+- [ ] Story9: send shopping list to email address: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
 
