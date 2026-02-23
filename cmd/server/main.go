@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/tomp-work/shoppinglist/cmd/server/handler"
+	"github.com/tomp-work/shoppinglist/cmd/server/models"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 
 	handler := handler.Handler{
 		ItemMaxID: 3,
-		Items: map[string]*handler.Item{
+		Items: map[string]*models.Item{
 			"1": {
 				Id:     "1",
 				Name:   "bread",
@@ -36,7 +37,7 @@ func main() {
 				Price:  15,
 			},
 		},
-		ListDetails: handler.ListDetails{
+		ListDetails: models.ListDetails{
 			TotalPrice:    30,
 			SpendingLimit: 100,
 		},

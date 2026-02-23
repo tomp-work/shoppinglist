@@ -6,29 +6,13 @@ import (
 	"slices"
 
 	"github.com/labstack/echo/v5"
+	"github.com/tomp-work/shoppinglist/cmd/server/models"
 )
-
-type Item struct {
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	Picked bool   `json:"picked"`
-	SeqNum int    `json:"seqnum"`
-	Price  int    `json:"price"`
-}
-
-type ItemUpdate struct {
-	Picked bool `json:"picked"`
-}
-
-type ListDetails struct {
-	TotalPrice    int `json:"totalprice"`
-	SpendingLimit int `json:"spendingLimit"`
-}
 
 type Handler struct {
 	ItemMaxID   int
-	Items       map[string]*Item
-	ListDetails ListDetails
+	Items       map[string]*models.Item
+	ListDetails models.ListDetails
 }
 
 func (h *Handler) generateID() string {
@@ -37,14 +21,14 @@ func (h *Handler) generateID() string {
 }
 
 // sortedItems returns a slice containing the items from the Items map sorted by sequence number.
-func (h *Handler) sortedItems() []*Item {
+func (h *Handler) sortedItems() []*models.Item {
 	// Add items from the map to a slice.
-	items := []*Item{}
+	items := []*models.Item{}
 	for _, v := range h.Items {
 		items = append(items, v)
 	}
 	// Sort the items slice in seqnum order.
-	slices.SortFunc(items, func(a *Item, b *Item) int { return a.SeqNum - b.SeqNum })
+	slices.SortFunc(items, func(a *models.Item, b *models.Item) int { return a.SeqNum - b.SeqNum })
 	return items
 }
 
@@ -54,7 +38,7 @@ func (h *Handler) GetItemList(c *echo.Context) error {
 
 // CreateItem will create the item, create a unique ID and set the sequence number so the item is at the end of the list.
 func (h *Handler) CreateItem(c *echo.Context) error {
-	item := Item{}
+	item := models.Item{}
 	if err := c.Bind(&item); err != nil {
 		return fmt.Errorf("failed to Bind in CreateItem: %w", err)
 	}
@@ -82,7 +66,7 @@ func (h *Handler) UpdateItem(c *echo.Context) error {
 	if _, ok := h.Items[id]; !ok {
 		return c.String(http.StatusNotFound, fmt.Sprintf("id (%s) not found", id))
 	}
-	update := ItemUpdate{}
+	update := models.ItemUpdate{}
 	if err := c.Bind(&update); err != nil {
 		return fmt.Errorf("failed to Bind in UpdateItem: %w", err)
 	}
