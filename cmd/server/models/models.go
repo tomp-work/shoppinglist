@@ -12,6 +12,10 @@ type ItemUpdate struct {
 	Picked bool `json:"picked"`
 }
 
+type Email struct {
+	EmailAddress string `json:"emailAddress"`
+}
+
 type ListDetails struct {
 	TotalPrice    int `json:"totalprice"`
 	SpendingLimit int `json:"spendingLimit"`

@@ -7,10 +7,20 @@ import (
 	"testing"
 
 	"github.com/labstack/echo/v5"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/tomp-work/shoppinglist/cmd/server/handler"
 	"github.com/tomp-work/shoppinglist/cmd/server/models"
 )
+
+type MockEmailSender struct {
+	mock.Mock
+}
+
+func (m *MockEmailSender) Send(toEmail, content string) error {
+	args := m.Called(toEmail, content)
+	return args.Error(0)
+}
 
 func TestGetItemList(t *testing.T) {
 	e := echo.New()
@@ -381,4 +391,47 @@ func TestUpdateListDetails(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, models.ListDetails{SpendingLimit: 350, TotalPrice: 150}, h.ListDetails)
 	require.JSONEq(t, `{"spendingLimit":350,"totalprice":150}`, rec.Body.String())
+}
+
+const expectedEmail = `Dear Tom,
+
+Please can you pick up the following shopping:
+
+- Whiskey (£25)
+- Gin (£30)
+
+The total price of the shop should be £55.
+
+Thanks,
+
+Clare
+`
+
+func TestSendListEmail(t *testing.T) {
+	const emailJSON = `{"emailAddress":"may.dup@example.com"}`
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(emailJSON))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/list/send")
+
+	mockSender := new(MockEmailSender)
+	mockSender.On("Send", "may.dup@example.com", expectedEmail).Return(nil)
+
+	h := &handler.Handler{
+		Items: map[string]*models.Item{
+			"1": {Id: "1", SeqNum: 1, Name: "Gin", Price: 30},
+			"2": {Id: "2", SeqNum: 0, Name: "Whiskey", Price: 25},
+		},
+		ListDetails: models.ListDetails{
+			TotalPrice: 55,
+		},
+		EmailSender: mockSender,
+	}
+
+	require.NoError(t, h.SendListEmail(c))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "", rec.Body.String())
+	mockSender.AssertExpectations(t)
 }

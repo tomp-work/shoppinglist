@@ -6,10 +6,12 @@ import (
 	"slices"
 
 	"github.com/labstack/echo/v5"
+	"github.com/tomp-work/shoppinglist/cmd/server/emails"
 	"github.com/tomp-work/shoppinglist/cmd/server/models"
 )
 
 type Handler struct {
+	EmailSender emails.Sender
 	ItemMaxID   int
 	Items       map[string]*models.Item
 	ListDetails models.ListDetails
@@ -123,4 +125,21 @@ func (h *Handler) UpdateListDetails(c *echo.Context) error {
 		return fmt.Errorf("failed to Bind in UpdateListDetails: %w", err)
 	}
 	return c.JSON(http.StatusOK, &h.ListDetails)
+}
+
+// SendListEmail sends the list to the given email address given in the POST request JSON.
+func (h *Handler) SendListEmail(c *echo.Context) error {
+	email := models.Email{}
+	if err := c.Bind(&email); err != nil {
+		return fmt.Errorf("failed to Bind in SendListEmail: %w", err)
+	}
+	content, err := emails.GenerateShoppingListEmail("Tom", "Clare", h.ListDetails, h.sortedItems())
+	if err != nil {
+		return fmt.Errorf("failed to generate email in SendListEmail: %w", err)
+	}
+	err = h.EmailSender.Send(email.EmailAddress, content)
+	if err != nil {
+		return fmt.Errorf("failed to send email in SendListEmail: %w", err)
+	}
+	return c.NoContent(http.StatusOK)
 }

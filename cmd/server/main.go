@@ -1,19 +1,36 @@
 package main
 
 import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
+	"github.com/tomp-work/shoppinglist/cmd/server/emails"
 	"github.com/tomp-work/shoppinglist/cmd/server/handler"
 	"github.com/tomp-work/shoppinglist/cmd/server/models"
 )
 
 func main() {
-	e := echo.New()
-	e.Use(middleware.RequestLogger())
-	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
+	// Read config.
+	err := godotenv.Load(".env.local")
+	if err != nil {
+		log.Fatal("Error loading .env.local file")
+	}
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	// Get the Resend API key from the environment and add to sender implementation.
+	emailSender := emails.ResendSender{
+		ApiKey: os.Getenv("RESEND_API_KEY"),
+	}
 
 	handler := handler.Handler{
-		ItemMaxID: 3,
+		EmailSender: &emailSender,
+		ItemMaxID:   3,
 		Items: map[string]*models.Item{
 			"1": {
 				Id:     "1",
@@ -55,6 +72,11 @@ func main() {
 		panic("TotalPrice is incorrect")
 	}
 
+	// Setup HTTP server.
+	e := echo.New()
+	e.Use(middleware.RequestLogger())
+	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
+
 	// List item routing.
 	e.GET("/item", handler.GetItemList)
 	e.POST("/item", handler.CreateItem)
@@ -65,6 +87,7 @@ func main() {
 	// List details routing.
 	e.GET("/list", handler.GetListDetails)
 	e.PUT("/list", handler.UpdateListDetails)
+	e.POST("/list/send", handler.SendListEmail)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)

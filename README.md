@@ -28,9 +28,19 @@ Frontend:
 
 - `npm run dev`
 
+## Test cURL
+
+cURL command to test sending a shopping list by email:
+
+```sh
+curl -H "Content-Type: application/json" \
+  -X POST \
+  -d '{"emailAddress":"valid.email@example.com"}' \
+  http://localhost:1323/list/send
+```
+
 ## TODO
 
-- [ ] Story9: send shopping list to email address: BE
 - [ ] Story9: send shopping list to email address: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
@@ -56,3 +66,5 @@ Frontend:
 - [x] Refactor: total calculation is done on create/delete and persisted in ListDetails.
 - [x] Story8: spending limit: FE
 - [x] Remove quantity from ListItem
+- [x] Story9: send shopping list to email address: BE
+
