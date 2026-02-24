@@ -8,6 +8,7 @@ import MoveDownAction from './MoveDownAction.tsx';
 import SpendingLimitForm from './SpendingLimitForm.tsx';
 import TotalPriceTableSummary from './TotalPriceTableSummary.tsx';
 import './App.css';
+import SendEmailForm from './SendEmailForm.tsx';
 
 type Item = {
     id?: string;
@@ -84,6 +85,8 @@ export default function ShoppingList() {
             />
             <Divider />
             <SpendingLimitForm />
+            <Divider />
+            <SendEmailForm />
         </Card >
     )
 }

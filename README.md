@@ -41,7 +41,6 @@ curl -H "Content-Type: application/json" \
 
 ## TODO
 
-- [ ] Story9: send shopping list to email address: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
 
@@ -67,4 +66,5 @@ curl -H "Content-Type: application/json" \
 - [x] Story8: spending limit: FE
 - [x] Remove quantity from ListItem
 - [x] Story9: send shopping list to email address: BE
+- [x] Story9: send shopping list to email address: FE
 

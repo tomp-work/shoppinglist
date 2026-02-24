@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"net/mail"
 	"slices"
 
 	"github.com/labstack/echo/v5"
@@ -132,6 +133,10 @@ func (h *Handler) SendListEmail(c *echo.Context) error {
 	email := models.Email{}
 	if err := c.Bind(&email); err != nil {
 		return fmt.Errorf("failed to Bind in SendListEmail: %w", err)
+	}
+	_, err := mail.ParseAddress(email.EmailAddress)
+	if err != nil {
+		return fmt.Errorf("failed to parse email address (%s) in SendListEmail: %w", email.EmailAddress, err)
 	}
 	content, err := emails.GenerateShoppingListEmail("Tom", "Clare", h.ListDetails, h.sortedItems())
 	if err != nil {

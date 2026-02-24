@@ -393,6 +393,28 @@ func TestUpdateListDetails(t *testing.T) {
 	require.JSONEq(t, `{"spendingLimit":350,"totalprice":150}`, rec.Body.String())
 }
 
+func TestSendListEmailInvalidAddress(t *testing.T) {
+	const emailJSON = `{"emailAddress":"invalid"}`
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(emailJSON))
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/list/send")
+
+	h := &handler.Handler{
+		Items: map[string]*models.Item{
+			"1": {Id: "1", SeqNum: 1, Name: "Gin", Price: 30},
+			"2": {Id: "2", SeqNum: 0, Name: "Whiskey", Price: 25},
+		},
+		ListDetails: models.ListDetails{
+			TotalPrice: 55,
+		},
+	}
+
+	require.Error(t, h.SendListEmail(c))
+}
+
 const expectedEmail = `Dear Tom,
 
 Please can you pick up the following shopping:
@@ -417,7 +439,7 @@ func TestSendListEmail(t *testing.T) {
 	c.SetPath("/list/send")
 
 	mockSender := new(MockEmailSender)
-	mockSender.On("Send", "may.dup@example.com", expectedEmail).Return(nil)
+	mockSender.On("Send", "may.dup@example.com", expectedEmail).Return(nil).Once()
 
 	h := &handler.Handler{
 		Items: map[string]*models.Item{
