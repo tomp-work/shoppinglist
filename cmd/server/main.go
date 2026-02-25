@@ -77,6 +77,9 @@ func main() {
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
 
+	// Login routing.
+	e.POST("/login", handler.Login)
+
 	// List item routing.
 	e.GET("/item", handler.GetItemList)
 	e.POST("/item", handler.CreateItem)
@@ -84,6 +87,7 @@ func main() {
 	e.PUT("/item/:id", handler.UpdateItem)
 	e.POST("/item/:id/up", handler.MoveItemUp)
 	e.POST("/item/:id/down", handler.MoveItemDown)
+
 	// List details routing.
 	e.GET("/list", handler.GetListDetails)
 	e.PUT("/list", handler.UpdateListDetails)
