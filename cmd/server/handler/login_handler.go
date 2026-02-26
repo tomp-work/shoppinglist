@@ -10,13 +10,13 @@ import (
 )
 
 var (
-	accessSecret  = []byte("ACCESS_SECRET")
-	refreshSecret = []byte("REFRESH_SECRET")
+	AccessSecret  = []byte("ACCESS_SECRET")
+	RefreshSecret = []byte("REFRESH_SECRET")
 )
 
 type JwtCustomClaims struct {
-	jwt.RegisteredClaims
 	UserID string `json:"userId"`
+	jwt.RegisteredClaims
 }
 
 // generateToken generates a JWT.
@@ -37,7 +37,7 @@ func generateToken(userID string, secret []byte, ttl time.Duration) (string, err
 	return signed, nil
 }
 
-// login.
+// Login.
 func (h *Handler) Login(c *echo.Context) error {
 	req := struct {
 		Username string `json:"username"`
@@ -70,11 +70,11 @@ func (h *Handler) Login(c *echo.Context) error {
 		return c.NoContent(http.StatusUnauthorized)
 	}
 
-	accessToken, err := generateToken(user.ID, accessSecret, 15*time.Minute)
+	accessToken, err := generateToken(user.ID, AccessSecret, 15*time.Minute)
 	if err != nil {
 		return fmt.Errorf("failed to generate access token in handler.Login(): %w", err)
 	}
-	refreshToken, err := generateToken(user.ID, refreshSecret, 7*24*time.Hour)
+	refreshToken, err := generateToken(user.ID, RefreshSecret, 7*24*time.Hour)
 	if err != nil {
 		return fmt.Errorf("failed to generate refresh token in handler.Login(): %w", err)
 	}
@@ -87,4 +87,22 @@ func (h *Handler) Login(c *echo.Context) error {
 		RefreshToken: refreshToken,
 	}
 	return c.JSON(http.StatusOK, &rsp)
+}
+
+// TestAuth
+func (h *Handler) TestAuth(c *echo.Context) error {
+	token, err := echo.ContextGet[*jwt.Token](c, "user")
+	if err != nil {
+		return echo.ErrUnauthorized.Wrap(err)
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return fmt.Errorf("failed to cast claims as jwt.MapClaims")
+	}
+	userId, ok := claims["userId"].(string)
+	if !ok {
+		return fmt.Errorf(`failed to cast claims["userId"] as string`)
+	}
+
+	return c.String(http.StatusOK, userId)
 }

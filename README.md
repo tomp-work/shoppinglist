@@ -15,6 +15,8 @@
 - `go get github.com/stretchr/testify`
 - `go get github.com/resend/resend-go/v2`
 - `go get github.com/joho/godotenv`
+- `go get github.com/labstack/echo-jwt/v5`
+- `go get -u github.com/golang-jwt/jwt/v5`
 - `go mod tidy`
 - `npm install @ant-design/icons@6.x --save`
 
@@ -39,8 +41,29 @@ curl -H "Content-Type: application/json" \
   http://localhost:1323/list/send
 ```
 
+## User and Password
+
+The story is:
+
+```
+As a … shopper
+I want to … protect my shopping list from other people
+So I can … be sure it’s unchanged when I go back to it
+Requirements
+Add a login system to persist shopping lists for different users
+```
+
+```sh
+curl -H "Content-Type: application/json" \
+  -X POST \
+  -d '{"username":"tom", "password":"tom2"}' \
+  http://localhost:1323/login
+```
+
 ## TODO
 
+- [ ] Story10: User and password protect: BE
+- [ ] Story10: User and password protect: FE
 - [ ] Consider using UUIDs
 - [ ] Improve FE status/error handling
 

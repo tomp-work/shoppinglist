@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	echojwt "github.com/labstack/echo-jwt/v5"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/tomp-work/shoppinglist/cmd/server/emails"
@@ -28,7 +29,7 @@ func main() {
 		ApiKey: os.Getenv("RESEND_API_KEY"),
 	}
 
-	handler := handler.Handler{
+	h := handler.Handler{
 		EmailSender: &emailSender,
 		ItemMaxID:   3,
 		Items: map[string]*models.Item{
@@ -60,15 +61,15 @@ func main() {
 		},
 	}
 	// Double check ItemMaxID matches number of items in map.
-	if handler.ItemMaxID != len(handler.Items) {
+	if h.ItemMaxID != len(h.Items) {
 		panic("ItemMaxID is invalid")
 	}
 	// Double check totalPrice equals sum of item prices.
 	expectedTotalPrice := 0
-	for _, item := range handler.Items {
+	for _, item := range h.Items {
 		expectedTotalPrice += item.Price
 	}
-	if handler.ListDetails.TotalPrice != expectedTotalPrice {
+	if h.ListDetails.TotalPrice != expectedTotalPrice {
 		panic("TotalPrice is incorrect")
 	}
 
@@ -78,20 +79,26 @@ func main() {
 	e.Use(middleware.CORS("http://localhost:1323", "http://localhost:5173"))
 
 	// Login routing.
-	e.POST("/login", handler.Login)
+	e.POST("/login", h.Login)
+
+	api := e.Group("/api")
+	api.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: handler.AccessSecret,
+	}))
+	api.GET("/test", h.TestAuth)
 
 	// List item routing.
-	e.GET("/item", handler.GetItemList)
-	e.POST("/item", handler.CreateItem)
-	e.DELETE("/item/:id", handler.DeleteItem)
-	e.PUT("/item/:id", handler.UpdateItem)
-	e.POST("/item/:id/up", handler.MoveItemUp)
-	e.POST("/item/:id/down", handler.MoveItemDown)
+	e.GET("/item", h.GetItemList)
+	e.POST("/item", h.CreateItem)
+	e.DELETE("/item/:id", h.DeleteItem)
+	e.PUT("/item/:id", h.UpdateItem)
+	e.POST("/item/:id/up", h.MoveItemUp)
+	e.POST("/item/:id/down", h.MoveItemDown)
 
 	// List details routing.
-	e.GET("/list", handler.GetListDetails)
-	e.PUT("/list", handler.UpdateListDetails)
-	e.POST("/list/send", handler.SendListEmail)
+	e.GET("/list", h.GetListDetails)
+	e.PUT("/list", h.UpdateListDetails)
+	e.POST("/list/send", h.SendListEmail)
 
 	if err := e.Start(":1323"); err != nil {
 		e.Logger.Error("failed to start server", "error", err)
